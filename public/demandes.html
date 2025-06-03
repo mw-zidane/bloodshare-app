@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demandes de Sang</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    h2 {
+      color: #D62828;
+    }
+    table {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Menu déroulant moderne avec 3 barres -->
+<div class="dropdown" style="position: absolute; top: 10px; right: 10px;">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+    style="background-color: #D62828; color: white; font-size: 24px; border-radius: 6px;">
+    ☰
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item" href="#" onclick="redirectToProfile()">Mon Profil</a></li>
+    <li><a class="dropdown-item" href="request.html">Faire une demande</a></li>
+    <li><a class="dropdown-item" href="login.html">Déconnexion</a></li>
+  </ul>
+</div>
+
+<!-- Contenu principal -->
+<div class="container">
+  <h2 class="text-center">🩸 Liste des Demandes de Sang</h2>
+
+  <div class="mb-3">
+    <label for="searchGroup" class="form-label">Rechercher par groupe sanguin :</label>
+    <input type="text" class="form-control" id="searchGroup" placeholder="Exemple : A+, B-, O...">
+  </div>
+
+  <!-- Tableau dynamique ici -->
+  <table class="table table-bordered" id="requestsTable">
+    <thead class="table-dark">
+      <tr>
+        <th>Groupe sanguin</th>
+        <th>Localisation</th>
+        <th>Nombre de poches</th>
+        <th>Date limite</th>
+        <th>Date de création</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- les lignes seront générées dynamiquement ici -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Script JS pour redirection vers le profil -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    fetch('/api/requests')
+      .then(response => response.json())
+      .then(data => {
+        const tableBody = document.querySelector('tbody');
+        data.forEach(request => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${request.groupe_sanguin}</td>
+            <td>${request.localisation}</td>
+            <td>${request.nombre_poches}</td>
+            <td>${request.date_limite}</td>
+            <td>${new Date(request.created_at).toLocaleDateString()}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => console.error('Erreur lors du chargement des demandes :', error));
+  });
+  function redirectToProfile() {
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+    if (email) {
+      window.location.href = `profile.html?email=${encodeURIComponent(email)}`;
+    } else {
+      alert("Email non trouvé dans l'URL !");
+    }
+  }
+</script>
+
+<!-- Bootstrap JS pour le menu -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

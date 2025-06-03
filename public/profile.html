@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profil Utilisateur</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #f8f9fa, #e9ecef);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .profile-card {
+      max-width: 600px;
+      margin: 60px auto;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    .profile-icon {
+      font-size: 60px;
+      color: #007bff;
+    }
+    .btn-retour {
+      margin: 20px auto;
+      display: block;
+      background-color: #dc3545;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="login.html" class="btn btn-retour">Retour à la connexion</a>
+    <div class="profile-card text-center">
+      <div class="profile-icon">👤</div>
+      <h3 class="mb-4">Profil Utilisateur</h3>
+      <p><strong>Nom :</strong> <span id="nom">Chargement...</span></p>
+      <p><strong>Email :</strong> <span id="email">Chargement...</span></p>
+      <p><strong>Groupe sanguin :</strong> <span id="groupe_sanguin">Chargement...</span></p>
+      <p><strong>Rôle :</strong> <span id="role">Chargement...</span></p>
+      <p><strong>Date d'inscription :</strong> <span id="created_at">Chargement...</span></p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+
+    if (!email) {
+      alert("Aucun email trouvé dans l'URL.");
+      window.location.href = "login.html";
+    } else {
+      fetch(`/api/user?email=${encodeURIComponent(email)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.nom) {
+            document.getElementById("nom").textContent = data.nom;
+            document.getElementById("email").textContent = data.email;
+            document.getElementById("groupe_sanguin").textContent = data.groupe_sanguin;
+            document.getElementById("role").textContent = data.role;
+            document.getElementById("created_at").textContent = new Date(data.created_at).toLocaleString();
+          } else {
+            alert("Utilisateur non trouvé.");
+            window.location.href = "login.html";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Erreur de chargement du profil.");
+        });
+    }
+  </script>
+</body>
+</html>
